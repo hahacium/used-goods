@@ -5,39 +5,6 @@
 ### 1、下载导入
 直接下载到本地，然后导入开发者工具
 
-最近墙的厉害，也可使用蓝奏云下载
-
-> [https://www.lanzous.com/i6hd9mh](https://www.lanzous.com/i6hd9mh "https://www.lanzous.com/i6hd9mh")
-
-> 小程序开发综合文档地址：[https://developers.weixin.qq.com/miniprogram/dev/framework/](https://developers.weixin.qq.com/miniprogram/dev/framework/ "https://developers.weixin.qq.com/miniprogram/dev/framework/")
-
-### 2、开通云环境
-
-不罗嗦，这都是基础，直接看官方说明操作即可
-
-> 云开发官方文档说明：[https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html](https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html "https://developers.weixin.qq.com/miniprogram/dev/wxcloud/basis/getting-started.html")
-
-### 3、配置前端config
-
-找到config.js文件，然后按照我写的注释更改为你自己
-
-![config.js](http://cqu.oss-cn-shenzhen.aliyuncs.com/img/book/github/1.png "config.js")
-
-### 4、细节修改
-
-#### ①app.json 全局顶部导航
-
-![app.json](http://cqu.oss-cn-shenzhen.aliyuncs.com/img/book/github/2.png "app.json")
-
-#### ②pages/help/help.js 帮助文档
-
-![help.js](http://cqu.oss-cn-shenzhen.aliyuncs.com/img/book/github/3.png "help.js")
-
-#### ③images 默认图片
-
-![images](http://cqu.oss-cn-shenzhen.aliyuncs.com/img/book/github/4.png "images")
-
-
 ## 二、云函数
 
 ### 1、修改基础信息
