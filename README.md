@@ -11,7 +11,7 @@
 
 ##### 1.books云函数中使用的书籍信息使用的是极速数据的接口
 
-> 详情地址：[https://www.jisuapi.com/api/isbn/](https://www.jisuapi.com/api/isbn/ "https://www.jisuapi.com/api/isbn/")
+详情地址：[https://www.jisuapi.com/api/isbn/](https://www.jisuapi.com/api/isbn/ "https://www.jisuapi.com/api/isbn/")
 
 
 ##### 2.email云函数中使用的默认发送邮件方式为QQ邮箱
