@@ -1,6 +1,6 @@
 const config = {
-      appid: 'xxxxxxx', //服务商公众号Appid
-      envName: 'zf-shcud', // 小程序云开发环境ID
+      appid: 'wxe9b2530c41c9b95d', //服务商公众号Appid
+      envName: 'hahacium', // 小程序云开发环境ID
       mchid: 'xxxxxxxx', //商户号
       partnerKey: 'xxxxxxxxxxxxx', //此处填服务商密钥
       notify_url: 'https://mp.weixin.qq.com', //这个不要管

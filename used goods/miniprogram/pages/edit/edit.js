@@ -52,7 +52,7 @@ Page({
                   }
             })
       },
-      //获取用户手机号
+      /*//获取用户手机号
       getPhoneNumber: function(e) {
             let that = this;
             //判断用户是否授权确认
@@ -113,6 +113,9 @@ Page({
                         })
                   }
             })
+      },*/
+      phInput(e) {
+            this.data.phone = e.detail.value;
       },
       wxInput(e) {
             this.data.wxnum = e.detail.value;
@@ -221,6 +224,10 @@ Page({
                                           title: '修改成功',
                                           icon: 'success'
                                     })
+                                    setTimeout(function() {
+                                      wx.navigateBack({
+                                      })
+                                    }, 500)
                               },
                         })
                   },

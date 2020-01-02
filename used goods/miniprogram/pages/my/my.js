@@ -49,9 +49,13 @@ Page({
       },
       //预览图片
       preview(e) {
-            wx.previewImage({
-                  urls: e.currentTarget.dataset.link.split(",")
-            });
+            wx.showToast({
+              title: '发布后才可以分享朋友圈哦',
+              icon: 'none'
+            })
+            // wx.previewImage({
+            //       urls: e.currentTarget.dataset.link.split(",")
+            // });
       },
       onShareAppMessage() {
             return {

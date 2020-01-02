@@ -1,11 +1,11 @@
 const config = {
       appid: 'wx383426ad9ffe1075', //小程序Appid
-      envName: 'zf-shcud', // 小程序云开发环境ID
+      envName: 'hahacium', // 小程序云开发环境ID
       mchid: '1111111111', //商户号
       partnerKey: '1111111111111111111111', //此处填服务商密钥
       pfx: '', //证书初始化
-      fileID: 'cloud://zf-shcud.11111111111111111/apiclient_cert.p12' //证书云存储id
-      actionName:'重庆大学二手书小程序提现',
+      fileID: 'cloud://hahacium.11111111111111111/apiclient_cert.p12', //证书云存储id
+      actionName:'粤工程二手物品小程序提现',
       rate:1 //提现收取利率，1指的是每笔收取1%
 };
 

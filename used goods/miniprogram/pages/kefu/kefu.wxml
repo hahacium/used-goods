@@ -68,7 +68,7 @@
             </view>
       </view>
       <!--公众号-->
-      <view class="card" bindtap="preview" data-link="{{gzh}}">
+      <!-- <view class="card" bindtap="preview" data-link="{{gzh}}">
             <view class="card1">
                   <image class="wechatimg" src="/images/gzh.png" />
             </view>
@@ -82,5 +82,5 @@
             <view class="rightico">
                   <image class="rightimg" src="/images/right.png" />
             </view>
-      </view>
+      </view> -->
 </view>

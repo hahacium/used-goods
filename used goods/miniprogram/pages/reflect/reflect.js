@@ -23,7 +23,7 @@ Page({
                   _openid: app.openid
             }).get({
                   success: function(res) {
-                        console.log(res.data)
+                        // console.log(res.data)
                         that.setData({
                               userid: res.data[0]._id,
                               num: res.data[0].parse,
@@ -47,10 +47,10 @@ Page({
       //校检
       check(e) {
             let that = this;
-            //每日仅限提现一次
-            if (that.data.times > 0) {
+            //每日仅限提现三次
+            if (that.data.times > 2) {
                   wx.showToast({
-                        title: '每日仅限提现一次，请明日再来',
+                        title: '每日仅限提现三次，请明日再来',
                         icon: 'none',
                   })
                   return false;
@@ -102,6 +102,7 @@ Page({
                   days: config.days()
             }).count({
                   success: function(res) {
+                        // console.log(res)
                         that.setData({
                               times: res.total
                         })
@@ -153,7 +154,18 @@ Page({
             that.setData({
                   canReflect: false,
             })
-            // 利用云开发接口，调用云函数发起订单
+            db.collection('user').doc(app.userinfo._id).update({
+              data: {
+                parse: that.data.num - that.data.key
+              },
+              success() {
+                that.successref()
+              },
+              fail(res) {
+                console.log(res)
+              }
+            })
+            /*// 利用云开发接口，调用云函数发起订单
             wx.cloud.callFunction({
                   name: 'ref',
                   data: {
@@ -171,7 +183,7 @@ Page({
                         that.failref();
                         console.log(e)
                   }
-            });
+            });*/
       },
       //提现成功回调
       successref() {

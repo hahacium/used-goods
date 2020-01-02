@@ -353,6 +353,10 @@ picker {
       font-weight: 500;
 }
 
+view.n_publish{
+      background: #707070;
+}
+
 .c_contain {
       position: relative;
       width: 100%;

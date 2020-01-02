@@ -154,21 +154,30 @@ Page({
                         isbn: bn
                   },
                   success: res => {
+                        let myres = res
                         if (res.result.body.status == 0) {
                               db.collection('books').add({
                                     data: res.result.body.result,
                                     success: function(res) {
                                           wx.hideLoading();
+                                          console.log(res)
                                           that.setData({
-                                                bookinfo: res.result.body.result,
+                                                bookinfo: myres.result.body.result,
                                                 show_a: false,
                                                 show_b: true,
                                                 show_c: false,
                                                 active: 1,
                                           })
+                                          that.data.bookinfo._id = res._id
                                     },
                                     fail: console.error
                               })
+                        }else {
+                          wx.hideLoading()
+                          wx.showToast({
+                            title: '没有此书信息，请检测ISBN是否有误',
+                            icon: 'none'
+                          })
                         }
                   },
                   fail: err => {

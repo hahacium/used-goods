@@ -1,36 +1,28 @@
 var data = {
   //云开发环境id
-  env: 'zf-shcud',
+  env: 'hahacium',
   //分享配置
   share_title: '粤工程二手物品',
   share_img: '/images/poster.jpg', //可以是网络地址，本地文件路径要填绝对位置
-  share_poster: 'https://mmbiz.qpic.cn/mmbiz_jpg/nJPznPUZbhpA064Cl78xxvzBYTDa6O1Kl7RY1K6TerBaXcUf5AoN6x7s8q7xHgeu0Cl5qarPzE6ibbQZasWRErg/640', //必须为网络地址
+  share_poster: '', //小程序码海报，必须为网络地址
   //客服联系方式
   kefu: {
-    weixin: 'xuhuai66',
-    qq: '1604026596',
-    gzh: 'https://mmbiz.qpic.cn/mmbiz_png/nJPznPUZbhpKCwnibUUqnt7BQXr3MbNsasCfsBd0ATY8udkWPUtWjBTtiaaib6rTREWHnPYNVRZYgAesG9yjYOG7Q/640', //公众号二维码必须为网络地址
+    weixin: 'lmx1361571410',
+    qq: '1361571410',
+    gzh: '', //公众号二维码必须为网络地址
     phone: '' //如果你不设置电话客服，就留空
   },
   //默认启动页背景图，防止请求失败完全空白 
   //可以是网络地址，本地文件路径要填绝对位置
-  bgurl: '/images/startBg.jpg',
+  bgurl: '../../images/startBg.jpg',
   //校区
   campus: [{
-      name: '重大A区',
+      name: '广州校区',
       id: 0
     },
     {
-      name: '重大B区',
+      name: '清远校区',
       id: 1
-    },
-    {
-      name: '重大C区',
-      id: 2
-    },
-    {
-      name: '虎溪校区',
-      id: 3
     },
   ],
   //配置学院，建议不要添加太多，不然前端不好看
@@ -39,7 +31,7 @@ var data = {
       id: -1
     },
     {
-      name: '机械',
+      name: '软件',
       id: 0
     },
     {
@@ -141,8 +133,14 @@ function days() {
   let date = year + "" + month + day;
   return date;
 }
+
+function noShake(timeout, fun) {
+  clearTimeout(timeout);
+  timeout = setTimeout(fun, 500)
+}
 module.exports = {
   data: JSON.stringify(data),
   formTime: formTime,
-  days: days
+  days: days,
+  noShake: noShake
 }

@@ -2,10 +2,10 @@
 const cloud = require('wx-server-sdk')
 const QcloudSms = require("qcloudsms_js")
 // 替换成您申请的云短信 AppID 以及 AppKey
-const appid =111111111
+const appid = 1300996973
 const appkey = "xxxxxxxxxxxxx"
 const templateId = 11111111 // 替换成您所申请模板 ID
-const smsSign = "盈科工作室"// 替换成您所申请的签名
+const smsSign = "粤工程二手书"// 替换成您所申请的签名
 
 /*
 下

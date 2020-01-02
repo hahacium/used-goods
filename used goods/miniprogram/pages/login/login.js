@@ -4,7 +4,7 @@ const config = require("../../config.js");
 Page({
 
       /**
-       * 页面的初始数据
+       * 页面的初始数据f
        */
       data: {
             ids: -1,
@@ -13,6 +13,7 @@ Page({
             qqnum: '',
             email: '',
             campus: JSON.parse(config.data).campus,
+            timeout: null
       },
       choose(e) {
             let that = this;
@@ -22,76 +23,29 @@ Page({
             //下面这种办法无法修改页面数据
             /* this.data.ids = e.detail.value;*/
       },
-      //获取用户手机号
-      getPhoneNumber: function(e) {
-            let that = this;
-            //判断用户是否授权确认
-            if (!e.detail.errMsg || e.detail.errMsg != "getPhoneNumber:ok") {
-                  wx.showToast({
-                        title: '获取手机号失败',
-                        icon: 'none'
-                  })
-                  return;
-            }
-            wx.showLoading({
-                  title: '获取手机号中...',
-            })
-            wx.login({
-                  success(re) {
-                        wx.cloud.callFunction({
-                              name: 'regist', // 对应云函数名
-                              data: {
-                                    $url: "phone", //云函数路由参数
-                                    encryptedData: e.detail.encryptedData,
-                                    iv: e.detail.iv,
-                                    code: re.code
-                              },
-                              success: res => {
-                                    console.log(res);
-                                    wx.hideLoading();
-                                    if (res.result == null) {
-                                          wx.showToast({
-                                                title: '获取失败,请重新获取',
-                                                icon: 'none',
-                                                duration: 2000
-                                          })
-                                          return false;
-                                    }
-                                    //获取成功，设置手机号码
-                                    that.setData({
-                                          phone: res.result.data.phoneNumber
-                                    })
-                              },
-                              fail: err => {
-                                    console.error(err);
-                                    wx.hideLoading()
-                                    wx.showToast({
-                                          title: '获取失败,请重新获取',
-                                          icon: 'none',
-                                          duration: 2000
-                                    })
-                              }
-                        })
-                  },
-                  fail: err => {
-                        console.error(err);
-                        wx.hideLoading()
-                        wx.showToast({
-                              title: '获取失败,请重新获取',
-                              icon: 'none',
-                              duration: 2000
-                        })
-                  }
-            })
+      phInput(e) {
+        let that = this
+        config.noShake(this.timeout, function () {
+          that.data.phone = e.detail.value;
+        })
       },
       wxInput(e) {
-            this.data.wxnum = e.detail.value;
+        let that = this
+        config.noShake(this.timeout, function () {
+          that.data.wxnum = e.detail.value;
+        })
       },
       qqInput(e) {
-            this.data.qqnum = e.detail.value;
+        let that = this
+        config.noShake(this.timeout, function () {
+          that.data.qqnum = e.detail.value;
+        })
       },
       emInput(e) {
-            this.data.email = e.detail.value;
+        let that = this
+        config.noShake(this.timeout, function () {
+          that.data.email = e.detail.value;
+        })
       },
       getUserInfo(e) {
             let that = this;
@@ -117,7 +71,7 @@ Page({
             let phone = that.data.phone;
             if (phone == '') {
                   wx.showToast({
-                        title: '请先获取您的电话',
+                        title: '请先填写您的电话',
                         icon: 'none',
                         duration: 2000
                   });
@@ -192,7 +146,8 @@ Page({
                               },
                         })
                   },
-                  fail() {
+                  fail(res) {
+                        console.log(res)
                         wx.hideLoading();
                         wx.showToast({
                               title: '注册失败，请重新提交',
@@ -201,4 +156,67 @@ Page({
                   }
             })
       },
+      //获取用户手机号
+      /*getPhoneNumber: function(e) {
+            let that = this;
+            console.log(e)
+            //判断用户是否授权确认
+            if (!e.detail.errMsg || e.detail.errMsg != "getPhoneNumber:ok") {
+                  wx.showToast({
+                        title: '获取手机号失败',
+                        icon: 'none'
+                  })
+                  return;
+            }
+            wx.showLoading({
+                  title: '获取手机号中...',
+            })
+            wx.login({
+                  success(re) {
+                        wx.cloud.callFunction({
+                              name: 'regist', // 对应云函数名
+                              data: {
+                                    $url: "phone", //云函数路由参数
+                                    encryptedData: e.detail.encryptedData,
+                                    iv: e.detail.iv,
+                                    code: re.code
+                              },
+                              success: res => {
+                                    console.log(res);
+                                    wx.hideLoading();
+                                    if (res.result == null) {
+                                          wx.showToast({
+                                                title: '获取失败,请重新获取',
+                                                icon: 'none',
+                                                duration: 2000
+                                          })
+                                          return false;
+                                    }
+                                    //获取成功，设置手机号码
+                                    that.setData({
+                                          phone: res.result.data.phoneNumber
+                                    })
+                              },
+                              fail: err => {
+                                    console.error(err);
+                                    wx.hideLoading()
+                                    wx.showToast({
+                                          title: '获取失败,请重新获取',
+                                          icon: 'none',
+                                          duration: 2000
+                                    })
+                              }
+                        })
+                  },
+                  fail: err => {
+                        console.error(err);
+                        wx.hideLoading()
+                        wx.showToast({
+                              title: '获取失败,请重新获取',
+                              icon: 'none',
+                              duration: 2000
+                        })
+                  }
+            })
+      },*/
 })

@@ -17,6 +17,7 @@ Page({
        * 生命周期函数--监听页面加载
        */
       onShow: function(options) {
+            wx.hideLoading()
             this.getnum();
       },
       go(e) {
@@ -31,11 +32,12 @@ Page({
                   _openid: app.openid
             }).get({
                   success: function(res) {
-                        console.log(res.data)
+                        // console.log(res.data)
                         that.setData({
                               num: res.data[0].parse,
                               nomore: false,
                         });
+                        app.userinfo.parse = res.data[0].parse //更新app金额
                         that.his();
                   },
                   fail() {
@@ -53,7 +55,6 @@ Page({
                  oid: app.openid
             }).orderBy('stamp', 'desc').get({
                   success: function(res) {
-                        console.log(res.data)
                         that.setData({
                               page: 0,
                               list: res.data,

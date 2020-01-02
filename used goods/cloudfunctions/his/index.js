@@ -1,4 +1,4 @@
-const envid = 'zf-shcud'; //云开发环境id
+const envid = 'hahacium'; //云开发环境id
 
 /*
 下

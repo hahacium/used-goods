@@ -6,14 +6,14 @@
       </view>
       <image bindtap="changeCard" class="top_list" src="{{iscard?'/images/list.png':'/images/card.png'}}"></image>
 </view>
-<swiper class="banner" indicator-dots autoplay indicator-active-color="#fbbd08" circular>
+<!-- <swiper class="banner" indicator-dots autoplay indicator-active-color="#fbbd08" circular>
       <block wx:for="{{banner}}" wx:key="id">
             <swiper-item>
                   <image lazy-load src="{{item.img}}" bindtap="goweb" data-web="{{item}}" class="banner_image" />
             </swiper-item>
       </block>
 </swiper>
-<view class="space"></view>
+<view class="space"></view> -->
 <!--分类导航-->
 <view class="{{scrollTop>310?'nofixed':''}}">
 </view>

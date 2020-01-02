@@ -349,7 +349,7 @@
 .contact_box {
       z-index: 9;
       position: fixed;
-      bottom: 200rpx;
+      bottom: 100rpx;
       right: 40rpx;
       display: flex;
       width: 100rpx;
@@ -359,7 +359,13 @@
       padding: 20rpx 0;
       border-radius: 50rpx 50rpx 20rpx 20rpx;
       box-shadow: 0 0 20rpx #f0f0f0 !important;
+      animation: beat .6s ease-in-out infinite alternate;
 }
+@keyframes beat{
+			to{
+				transform: translateY(-15px);
+			}
+		}
 
 .contact_box image {
       width: 80rpx;

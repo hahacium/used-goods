@@ -36,10 +36,10 @@ Page({
                   phoneNumber: e.currentTarget.dataset.phone
             })
       },
-      //预览图片
+      /*//预览图片
       preview(e) {
             wx.previewImage({
                   urls: e.currentTarget.dataset.link.split(",")
             });
-      },
+      },*/
 })

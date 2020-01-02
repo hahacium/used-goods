@@ -10,11 +10,15 @@ Page({
       data: {
             first_title: true,
             place: '',
+            timeout: null
       },
       onLoad(e) {
             this.getuserdetail();
             this.data.id = e.scene;
             this.getPublish(e.scene);
+      },
+      onShow() {
+            this.getnum()
       },
       changeTitle(e) {
             let that = this;
@@ -54,6 +58,7 @@ Page({
             let that = this;
             db.collection('books').doc(e).get({
                   success: function(res) {
+                    console.log('bookinfo',res.data)
                         that.setData({
                               bookinfo: res.data
                         })
@@ -92,6 +97,7 @@ Page({
                         return false
                   }
                   that.getStatus();
+                  return
             }
             that.getStatus();
       },
@@ -112,7 +118,253 @@ Page({
                   }
             })
       },
-      //支付提交
+      paypost() {
+            let that = this;
+            wx.showLoading({
+              title: '正在下单'
+            });
+            if (that.data.publishinfo._openid == app.openid) {
+              wx.hideLoading()
+              wx.showToast({
+                title: '无法购买自己的订单',
+                icon: 'none'
+              })
+              return false
+            }
+            if (that.data.num < that.data.publishinfo.price) {
+              wx.hideLoading()
+              wx.showLoading({
+                title: '钱包金额不足'
+              });
+              setTimeout(function() {
+                wx.navigateTo({
+                  url: '../parse/parse'
+                })
+              }, 500)
+              return false
+            }
+            db.collection('user').doc(app.userinfo._id).update({
+              data: {
+                parse: that.data.num - that.data.publishinfo.price
+              },
+              success() {
+                wx.hideLoading()
+                wx.showLoading({
+                  title: '支付成功'
+                });
+                that.setStatus()
+              },
+              fail(res) {
+                console.log(res)
+              }
+            })
+      },
+      //修改卖家在售状态
+      setStatus() {
+        let that = this
+        /*wx.hideLoading()
+        wx.showLoading({
+          title: '正在处理',
+        })*/
+        // 利用云开发接口，调用云函数发起订单
+        wx.cloud.callFunction({
+          name: 'pay',
+          data: {
+            $url: "changeP", //云函数路由参数
+            _id: that.data.publishinfo._id,
+            status: 1
+          },
+          success: res => {
+            console.log('修改订单状态成功')
+            that.creatOrder();
+          },
+          fail(e) {
+            wx.hideLoading();
+            wx.showToast({
+              title: '发生异常，请及时和管理人员联系处理',
+              icon: 'none'
+            })
+          }
+        })
+      },
+      //创建订单
+      creatOrder() {
+            let that = this;
+            db.collection('order').add({
+                  data: {
+                        creat: new Date().getTime(),
+                        status: 1, //0在售；1买家已付款，但卖家未发货；2买家确认收获，交易完成；3、交易作废，退还买家钱款
+                        price: that.data.publishinfo.price, //售价
+                        deliveryid: that.data.publishinfo.deliveryid, //0自1配
+                        ztplace: that.data.publishinfo.place, //自提时地址
+                        psplace: that.data.place, //配送时买家填的地址
+                        bookinfo: {
+                              _id: that.data.bookinfo._id,
+                              author: that.data.bookinfo.author,
+                              edition: that.data.bookinfo.edition,
+                              pic: that.data.bookinfo.pic,
+                              title: that.data.bookinfo.title,
+                        },
+                        seller: that.data.publishinfo._openid,
+                        sellid: that.data.publishinfo._id,
+                  },
+                  success(e) {
+                        that.history('购买书籍', that.data.publishinfo.price, 2, e._id)
+                  },
+                  fail() {
+                        wx.hideLoading();
+                        wx.showToast({
+                              title: '发生异常，请及时和管理人员联系处理',
+                              icon: 'none'
+                        })
+                  }
+            })
+      },
+      //历史记录
+      //记录两次，一次相当于使用微信支付充值，一次是用于购买书籍付款(废弃)
+      history(name, num, type, id) {
+        let that = this;
+        // db.collection('history').add({
+        //       data: {
+        //             stamp: new Date().getTime(),
+        //             type: 1, //1充值2支付
+        //             name: '微信支付',
+        //             num: num,
+        //             oid: app.openid,
+        //       },
+        //       success: function(res) {
+        db.collection('history').add({
+          data: {
+            stamp: new Date().getTime(),
+            type: type, //1充值2支付
+            name: name,
+            num: num,
+            oid: app.openid,
+          },
+          success: function (res) {
+            wx.hideLoading();
+            // that.sms();
+            that.tip();
+            wx.redirectTo({
+              url: '/pages/success/success?id=' + id,
+            })
+          }
+        })
+        //       },
+        // })
+      },
+      /*//短信提醒
+      sms() {
+            let that = this;
+            wx.cloud.callFunction({
+                  name: 'sms',
+                  data: {
+                        mobile: that.data.userinfo.phone,
+                        title: that.data.bookinfo.title,
+                  },
+                  success: res => {
+                        console.log(res)
+                  },
+            })
+      },*/
+      //邮件提醒收货
+      tip() {
+        let that = this;
+        wx.cloud.callFunction({
+          name: 'email',
+          data: {
+            type: 1, //1下单提醒2提醒收货
+            email: that.data.userinfo.email,
+            title: that.data.bookinfo.title,
+          },
+          success: res => {
+            console.log(res)
+          },
+        })
+      },
+      //路由
+      go(e) {
+        // console.log(e.currentTarget)
+            wx.navigateTo({
+                  url: e.currentTarget.dataset.go,
+            })
+      },
+      //地址输入
+      placeInput(e) {
+        let that = this
+        config.noShake(this.timeout, function() {
+          that.data.place = e.detail.value
+        })
+      },
+      onShareAppMessage() {
+            return {
+                  title: '这本《' + this.data.bookinfo.title + '》只要￥' + this.data.publishinfo.price + '元，快来看看吧',
+                  path: '/pages/detail/detail?scene=' + this.data.publishinfo._id,
+            }
+      },
+      //获取金额
+      getnum() {
+        let that = this;
+        if (!app.openid) {
+          return false
+        }
+        db.collection('user').where({
+          _openid: app.openid
+        }).get({
+          success: function (res) {
+              that.data.num = res.data[0].parse
+              // console.log('num', that.data.num)
+          },
+          fail: function() {
+            wx.showToast({
+              title: '获取金额失败请稍后购买',
+              icon: 'none'
+            })
+          }
+        })
+      },
+      //为了数据安全可靠，每次进入获取一次用户信息
+      getuserdetail() {
+            let that = this
+            if (!app.openid) {
+                  wx.cloud.callFunction({
+                        name: 'regist', // 对应云函数名
+                        data: {
+                              $url: "getid", //云函数路由参数
+                        },
+                        success: re => {
+                              db.collection('user').where({
+                                    _openid: re.result
+                              }).get({
+                                    success: function(res) {
+                                          if (res.data.length !== 0) {
+                                                app.openid = re.result;
+                                                app.userinfo = res.data[0];
+                                                that.num = res.data[0].parse
+                                                // console.log('app', app)
+                                          }
+                                          // console.log('user', res)
+                                    }
+                              })
+                        }
+                  })
+            }
+      },
+      /*//生成海报
+      creatPoster() {
+            let that = this;
+            let pubInfo = {
+                  id: that.data.publishinfo._id,
+                  name: that.data.publishinfo.bookinfo.title,
+                  pic: that.data.publishinfo.bookinfo.pic.replace('http', 'https'),
+                  origin: that.data.publishinfo.bookinfo.price,
+                  now: that.data.publishinfo.price,
+            }
+            wx.navigateTo({
+                  url: "/pages/poster/poster?bookinfo=" + JSON.stringify(pubInfo)
+            })
+      },*/
+      /*//支付提交
       paypost() {
             let that = this;
             wx.showLoading({
@@ -152,186 +404,9 @@ Page({
                         that.setStatus();
                   },
             })
-      },
-      //修改卖家在售状态
-      setStatus() {
-            let that = this
-            wx.showLoading({
-                  title: '正在处理',
-            })
-            // 利用云开发接口，调用云函数发起订单
-            wx.cloud.callFunction({
-                  name: 'pay',
-                  data: {
-                        $url: "changeP", //云函数路由参数
-                        _id: that.data.publishinfo._id,
-                        status: 1
-                  },
-                  success: res => {
-                        console.log('修改订单状态成功')
-                        that.creatOrder();
-                  },
-                  fail(e) {
-                        wx.hideLoading();
-                        wx.showToast({
-                              title: '发生异常，请及时和管理人员联系处理',
-                              icon: 'none'
-                        })
-                  }
-            })
-      },
-      //创建订单
-      creatOrder() {
-            let that = this;
-            db.collection('order').add({
-                  data: {
-                        creat: new Date().getTime(),
-                        status: 1, //0在售；1买家已付款，但卖家未发货；2买家确认收获，交易完成；3、交易作废，退还买家钱款
-                        price: that.data.publishinfo.price, //售价
-                        deliveryid: that.data.publishinfo.deliveryid, //0自1配
-                        ztplace: that.data.publishinfo.place, //自提时地址
-                        psplace: that.data.place, //配送时买家填的地址
-                        bookinfo: {
-                              _id: that.data.bookinfo._id,
-                              author: that.data.bookinfo.author,
-                              edition: that.data.bookinfo.edition,
-                              pic: that.data.bookinfo.pic,
-                              title: that.data.bookinfo.title,
-                        },
-                        seller: that.data.publishinfo._openid,
-                        sellid: that.data.publishinfo._id,
-                  },
-                  success(e) {
-                        that.history('购买书籍', that.data.publishinfo.price, 2, e._id)
-                  },
-                  fail() {
-                        wx.hideLoading();
-                        wx.showToast({
-                              title: '发生异常，请及时和管理人员联系处理',
-                              icon: 'none'
-                        })
-                  }
-            })
-      },
-      //路由
-      go(e) {
-            wx.navigateTo({
-                  url: e.currentTarget.dataset.go,
-            })
-      },
-      //地址输入
-      placeInput(e) {
-            this.data.place = e.detail.value
-      },
-      onShareAppMessage() {
-            return {
-                  title: '这本《' + this.data.bookinfo.title + '》只要￥' + this.data.publishinfo.price + '元，快来看看吧',
-                  path: '/pages/detail/detail?scene=' + this.data.publishinfo._id,
-            }
-      },
-      //历史记录
-      //记录两次，一次相当于使用微信支付充值，一次是用于购买书籍付款
-      history(name, num, type, id) {
-            let that = this;
-            db.collection('history').add({
-                  data: {
-                        stamp: new Date().getTime(),
-                        type: 1, //1充值2支付
-                        name: '微信支付',
-                        num: num,
-                        oid: app.openid,
-                  },
-                  success: function(res) {
-                        db.collection('history').add({
-                              data: {
-                                    stamp: new Date().getTime(),
-                                    type: type, //1充值2支付
-                                    name: name,
-                                    num: num,
-                                    oid: app.openid,
-                              },
-                              success: function(res) {
-                                    wx.hideLoading();
-                                    that.sms();
-                                    that.tip();
-                                    wx.redirectTo({
-                                          url: '/pages/success/success?id=' + id,
-                                    })
-                              }
-                        })
-                  },
-            })
-      },
-      //短信提醒
-      sms() {
-            let that = this;
-            wx.cloud.callFunction({
-                  name: 'sms',
-                  data: {
-                        mobile: that.data.userinfo.phone,
-                        title: that.data.bookinfo.title,
-                  },
-                  success: res => {
-                        console.log(res)
-                  },
-            })
-      },
-      //邮件提醒收货
-      tip() {
-            let that = this;
-            wx.cloud.callFunction({
-                  name: 'email',
-                  data: {
-                        type: 1, //1下单提醒2提醒收货
-                        email: that.data.userinfo.email,
-                        title: that.data.bookinfo.title,
-                  },
-                  success: res => {
-                        console.log(res)
-                  },
-            })
-      },
-      //为了数据安全可靠，每次进入获取一次用户信息
-      getuserdetail() {
-            if (!app.openid) {
-                  wx.cloud.callFunction({
-                        name: 'regist', // 对应云函数名
-                        data: {
-                              $url: "getid", //云函数路由参数
-                        },
-                        success: re => {
-                              db.collection('user').where({
-                                    _openid: re.result
-                              }).get({
-                                    success: function(res) {
-                                          if (res.data.length !== 0) {
-                                                app.openid = re.result;
-                                                app.userinfo = res.data[0];
-                                                console.log(app)
-                                          }
-                                          console.log(res)
-                                    }
-                              })
-                        }
-                  })
-            }
-      },
-      //生成海报
-      creatPoster() {
-            let that = this;
-            let pubInfo = {
-                  id: that.data.publishinfo._id,
-                  name: that.data.publishinfo.bookinfo.title,
-                  pic: that.data.publishinfo.bookinfo.pic.replace('http', 'https'),
-                  origin: that.data.publishinfo.bookinfo.price,
-                  now: that.data.publishinfo.price,
-            }
-            wx.navigateTo({
-                  url: "/pages/poster/poster?bookinfo=" + JSON.stringify(pubInfo)
-            })
-      },
+      },*/
       //客服跳动动画
-      kefuani: function() {
+      /*kefuani: function() {
             let that = this;
             let i = 0
             let ii = 0
@@ -359,8 +434,8 @@ Page({
                         ++ii;
                   console.log(ii);
             }.bind(that), 1800);
-      },
+      },*/
       onReady() {
-            this.kefuani();
+            // this.kefuani();
       }
 })

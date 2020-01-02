@@ -13,8 +13,11 @@ Page({
       },
       onLoad() {
             this.listkind();
-            this.getbanner();
+            // this.getbanner();
             this.getList();
+      },
+      onShow() {
+        this.getuserdetail()
       },
       //监测屏幕滚动
       onPageScroll: function(e) {
@@ -107,9 +110,10 @@ Page({
             db.collection('publish').where({
                   status: 0,
                   dura: _.gt(new Date().getTime()),
-                  collegeid: collegeid
+                  collegeid: collegeid,
             }).orderBy('creat', 'desc').limit(20).get({
                   success: function(res) {
+                    // console.log(res)
                         wx.stopPullDownRefresh(); //暂停刷新动作
                         if (res.data.length == 0) {
                               that.setData({
@@ -194,7 +198,31 @@ Page({
                   url: '/pages/detail/detail?scene=' + e.currentTarget.dataset.id,
             })
       },
-      //获取轮播
+      //为了数据安全可靠，每次进入获取一次用户信息
+      getuserdetail() {
+        if (!app.openid) {
+          wx.cloud.callFunction({
+            name: 'regist', // 对应云函数名
+            data: {
+              $url: "getid", //云函数路由参数
+            },
+            success: re => {
+              db.collection('user').where({
+                _openid: re.result
+              }).get({
+                success: function (res) {
+                  if (res.data.length !== 0) {
+                    app.openid = re.result;
+                    app.userinfo = res.data[0];
+                    console.log('app', app)
+                  }
+                }
+              })
+            }
+          })
+        }
+      },
+      /*//获取轮播
       getbanner() {
             let that = this;
             db.collection('banner').where({}).get({
@@ -212,7 +240,7 @@ Page({
                         url: '/pages/web/web?url='+e.currentTarget.dataset.web.url,
                   })
             }
-      },
+      },*/
       onShareAppMessage() {
             return {
                   title: JSON.parse(config.data).share_title,

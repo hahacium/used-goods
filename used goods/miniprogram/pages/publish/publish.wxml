@@ -99,8 +99,8 @@
                   <view class="b_tips">
                         <text>* </text>此时长内您的发布信息将会展示给所有同学，超时后您只需去个人中心处擦亮即可再次展示</view>
             </view>
-            <view class="b_publish" bindtap="check_pub">马上发布
-            </view>
+            <view class="b_publish" bindtap="check_pub">马上发布</view>
+            <view class="b_publish n_publish" bindtap="initial">返回</view>
       </view>
 </van-transition>
 <!--步骤三-->

@@ -49,9 +49,8 @@ Page({
                                           if (res.data.length !== 0) {
                                                 app.openid = re.result;
                                                 app.userinfo = res.data[0];
-                                                console.log(app)
+                                                console.log('app', app)
                                           }
-                                          console.log(res)
                                     }
                               })
                         }
@@ -63,7 +62,7 @@ Page({
             let that = this;
             db.collection('start').where({}).get({
                   success: function (res) {
-                        console.log(res)
+                        // console.log(res)
                         that.setData({
                               bgurl: res.data[0].url
                         })

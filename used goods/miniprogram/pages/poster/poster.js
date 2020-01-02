@@ -148,14 +148,6 @@ Page({
                                     height: 1
                               },
                               {
-                                    type: 'image', //logo
-                                    url: '/images/poster/logo.png',
-                                    top: 320,
-                                    left: 20,
-                                    width: 129,
-                                    height: 20
-                              },
-                              {
                                     type: 'text',
                                     content: '— —让智慧延续，让温暖传递',
                                     fontSize: 13,

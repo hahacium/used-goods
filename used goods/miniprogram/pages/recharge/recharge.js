@@ -25,6 +25,65 @@ Page({
       paypost() {
             let that = this;
             let num = that.data.num;
+            if (!(num > 0)) {
+                  wx.showToast({
+                        title: '请输入金额',
+                        icon: 'none'
+                  })
+                  return false;
+            }
+            wx.showLoading({
+                  title: '正在充值',
+            });
+            this.up(num)
+      },
+      //余额计算
+      up(num) {
+            let that = this;
+            wx.cloud.callFunction({
+                  name: 'his',
+                  data: {
+                        $url: "recharge", //云函数路由参数
+                        num: num
+                  },
+                  success(e) {
+                        wx.showToast({
+                              title: '充值成功',
+                              icon: 'success',
+                        })
+                        that.history('钱包充值',num,1);
+                  },
+                  fail(e) {
+                        wx.showToast({
+                              title: '发送错误，请联系管理员',
+                              icon: 'none'
+                        })
+                        console.log(e)
+                  }
+            })
+      },
+      //历史记录
+      history(name,num,type){
+            let that = this;
+            db.collection('history').add({
+                  data: {
+                        stamp: new Date().getTime(),
+                        type:type,//1充值2支付
+                        name:name,
+                        num:num,
+                        oid: app.openid,
+                  },
+                  success: function (res) {
+                        // console.log(res)
+                        wx.navigateBack({})
+                  },
+                  fail: console.error
+            })
+      },
+      /*//支付提交
+      paypost() {
+            let that = this;
+            let num = that.data.num;
             if (!num > 0) {
                   wx.showToast({
                         title: '请输入金额',
@@ -70,46 +129,5 @@ Page({
                         that.up(num);
                   },
             })
-      },
-      //余额计算
-      up(num) {
-            let that = this;
-            wx.cloud.callFunction({
-                  name: 'his',
-                  data: {
-                        $url: "recharge", //云函数路由参数
-                        num: num
-                  },
-                  success(e) {
-                        wx.showToast({
-                              title: '充值成功',
-                              icon: 'success',
-                        })
-                        that.history('钱包充值',num,1);
-                  },
-                  fail(e) {
-                        wx.showToast({
-                              title: '发送错误，请联系管理员',
-                              icon: 'none'
-                        })
-                  }
-            })
-      },
-      //历史记录
-      history(name,num,type){
-            let that = this;
-            db.collection('history').add({
-                  data: {
-                        stamp: new Date().getTime(),
-                        type:type,//1充值2支付
-                        name:name,
-                        num:num,
-                        oid: app.openid,
-                  },
-                  success: function (res) {
-                        console.log(res)
-                  },
-                  fail: console.error
-            })
-      },
+      },*/
 })
